@@ -1,0 +1,65 @@
+.window {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -10000px;
+    background-color: rgba(240, 199, 242, 0.9);
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    transition: bottom 0.6s ease;
+}
+
+.window.visible {
+    bottom: 0;
+}
+
+.window.hidden {
+    bottom: -100px;
+    pointer-events: none;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+form, h3 {
+    display: inline-block;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+.form-div {
+    margin-top: 30px;
+}
+
+button {
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 7px 20px;
+    font-size: 1rem;
+    color: white;
+}
+
+.selected-btn {
+    background-color: rgb(255, 255, 255);
+    color: rgb(74, 74, 74);
+
+}
+
+@media (max-width: 400px) {
+    button {
+        padding: 7px 6px;
+    }
+}

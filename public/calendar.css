@@ -1,0 +1,61 @@
+html, body {
+    margin: 0 10px;
+    font-family: "Fredoka", sans-serif;
+    height: 100%; /* Ensure full height */
+}
+
+.table-container {
+    display: flex;
+    padding-bottom: 100px; /* Space for footer height */
+}
+
+table {
+    table-layout: fixed;
+}
+
+th, td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    font-size: 3vw;
+}
+
+label {
+    height: 10vw;
+    border-radius: 30px;
+}
+
+.cell {
+    background-color: rgba(246, 247, 247, 0.738) !important;
+    border: 1px solid white;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.cell.active {
+    transform: scale(1.1);
+}
+
+
+.empty-cell {
+    cursor: auto;
+}
+
+.cell.selected {
+    background-color: rgb(240, 199, 242) !important;
+}
+
+@media (max-width: 490px) {
+    label {
+        height: 10vh;
+        line-height: 10vh;
+    }
+    th {
+        font-size: 5vw;
+    }
+}
+
+
