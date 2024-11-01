@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import FormWindow from './FormWindow';
-import '../../public/window.css'; // Ensure you have your CSS styles here
+import '../../../public/window.css'; // Ensure you have your CSS styles here
 
 const formatDateInHebrew = (year, month, day) => {
     const date = new Date(year, month - 1, day);
@@ -25,7 +25,7 @@ function Window (props) {
     else {
       setIsSelected(false);
     }
-  }, [props.day]);
+  }, [props.day, props.availability]);
 
   function handelClick() {
     setIsSelected(prev => !prev)
@@ -44,6 +44,7 @@ function Window (props) {
                 <div>
                   <h3>יכול רק:</h3>
                     <FormWindow 
+                      isVisible={props.isWindowVisible} 
                       day={props.day} 
                       constraint={props.constraint}
                       availability={props.availability}

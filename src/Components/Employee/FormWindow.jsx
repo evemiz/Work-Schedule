@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import '../../public/window.css'; // Ensure you have your CSS styles here
+import '../../../public/window.css'; // Ensure you have your CSS styles here
 
 function FormWindow(props) {
   const [selectedOptions, setSelectedOptions] = useState({ 1: false, 2: false, 3: false });
 
-  // Update the selectedOptions only when the day changes
+  // Update the selectedOptions only when the day or availability changes
   useEffect(() => {
     const availability = props.availability[props.day]; // Access availability for the specific day
-  
+
     if (availability) {
       setSelectedOptions({
         1: availability.morning || false,
@@ -15,16 +15,7 @@ function FormWindow(props) {
         3: availability.evening || false,
       });
     }
-  
-    // Check if selectedOptions has all values set to true
-    if (selectedOptions[1] && selectedOptions[2] && selectedOptions[3]) {
-      setSelectedOptions({
-        1: availability.morning || false,
-        2: availability.noon || false,
-        3: availability.evening || false,
-      });
-    }
-  }, [props.day, selectedOptions]);
+  }, [props.day, props.availability]); // Reacts to both day and availability changes
 
   function toggleOption(option) {
     setSelectedOptions((prevSelected) => {

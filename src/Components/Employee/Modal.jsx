@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../../public/modal.css'
+import '../../../public/modal.css'
 
 function Modal(props) {
   const { title, bodyContent, button, isVisible, onConfirm } = props;

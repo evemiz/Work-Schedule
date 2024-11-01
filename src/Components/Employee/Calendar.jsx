@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Window from './Window';
 import Modal from './Modal';
 import Cell from './Cell';
-import '../../public/calendar.css';
+import '../../../public/calendar.css';
 
 const generateCalendar = (year, month) => {
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();

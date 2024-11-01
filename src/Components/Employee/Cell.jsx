@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../../public/calendar.css'
+import '../../../public/calendar.css'
 
 function Cell(props) {
     const {cell, availability} = props
