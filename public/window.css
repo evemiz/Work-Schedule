@@ -43,23 +43,46 @@ h3 {
     margin-top: 30px;
 }
 
-button {
+.form-button,.not-available-button  {
     background-color: transparent;
-    border: 2px solid white;
+    border: none;
     border-radius: 10px;
     padding: 7px 20px;
     font-size: 1rem;
+    color: grey;
+}
+
+.form-button:hover {
+    font-weight:600;
+}
+
+.not-available-button:hover {
+    color: red;
+    font-weight:600;
+}
+
+.selected-btn-not-available {
+    background-color: red;
+    color: white;
+}
+
+.selected-btn-not-available:hover {
     color: white;
 }
 
 .selected-btn {
     background-color: rgb(255, 255, 255);
     color: rgb(74, 74, 74);
-
 }
 
 @media (max-width: 400px) {
     button {
         padding: 7px 6px;
     }
+}
+
+.window-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
 }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../../public/modal.css'
 
-function Modal({ title, bodyContent, isVisible, onClose, onConfirm }) {
+function Modal(props) {
+  const { title, bodyContent, button, isVisible, onConfirm } = props;
   const [shake, setShake] = useState(false); // State to manage shake animation
 
   useEffect(() => {
@@ -27,7 +28,7 @@ function Modal({ title, bodyContent, isVisible, onClose, onConfirm }) {
               {bodyContent}
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary" onClick={onConfirm}>הבנתי</button>
+              <button type="button" className="btn btn-primary" onClick={onConfirm}>{button}</button>
             </div>
           </div>
         </div>

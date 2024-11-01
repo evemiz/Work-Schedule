@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Window from './Window';
 import Modal from './Modal';
+import Cell from './Cell';
 import '../../public/calendar.css';
 
 const generateCalendar = (year, month) => {
@@ -33,19 +34,37 @@ function Calendar() {
   ));
   const [constraintsNum, setConstraintsNum] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const [modalButton, setModalButton] = useState("");
 
-  const daysNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'שבת'];
+  const daysNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
   const rows = generateCalendar(year, month);
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
+
+  function submit () {
+    const hasEmptyValue = Object.values(availability).some(value => value === '');
+    if (hasEmptyValue) {
+      setModalTitle("שגיאה בשליחת הסידור");
+      setModalContent("מלא את כל הימים");
+      setModalButton("הבנתי");
+      setModalVisible(true);
+    } else {
+      setModalTitle("האם אתה בטוח שברצונך לשלוח את הסידור ?");
+      setModalContent("לאחר השליחה אין אפשרות לערוך את המשמרות.");
+      setModalButton("שלח סידור");
+      setModalVisible(true);
+    }
+  }
 
   // Function to handle availability constraints based on user selection
   // Called from <FormWindow />
   function handelConstraint (constraint, day) {
     if(constraintsNum >= 10 && (availability[day] === '' || availability[day] === 'allDay')) {
-      openModal();
+      setModalTitle("הגעת למגבלת האילוצים");
+      setModalContent("לא ניתן לקבוע יותר מ-10 אילוצים בחודש.");
+      setModalButton("הבנתי");
+      setModalVisible(true);
     }
     else{
       setAvailability((prevAvailability) => {
@@ -62,6 +81,20 @@ function Calendar() {
             ...updatedAvailability[day],
             [constraint]: !updatedAvailability[day][constraint]
           };
+
+          const allFalse =
+            updatedAvailability[day].morning === false &&
+            updatedAvailability[day].noon === false &&
+            updatedAvailability[day].evening === false;
+
+          if (allFalse) {
+            updatedAvailability[day] = 'allDay';
+            setConstraintsNum(prev => {
+              if (prev-1 < 0)
+                return 0
+              return prev-1
+            });
+          }
   
           // Check if all options are true
           const allSelected = 
@@ -80,6 +113,23 @@ function Calendar() {
     }
   }
 
+  function notAvailable(day) {
+    setAvailability((prevAvailability) => {
+      const updatedAvailability = { ...prevAvailability };
+      if(updatedAvailability[day] === 'no'){
+        updatedAvailability[day] = 'allDay';
+      }
+      else if(updatedAvailability[day] !== '' && updatedAvailability[day] !== 'allDay'){
+        setConstraintsNum(prev => prev - 1);
+        updatedAvailability[day] = 'no';
+      }
+      else{
+        updatedAvailability[day] = 'no';
+      }
+      return updatedAvailability;
+    })
+  }
+
   // Function to handle cell click events in the calendar
   const handleCellClick = (day) => {
     if (day === 0) return;
@@ -92,6 +142,9 @@ function Calendar() {
       } else {
         if (updatedAvailability[day] !== 'allDay'){
           setConstraintsNum(prev => prev - 1);
+        }
+        if (updatedAvailability[day] === 'no'){
+          updatedAvailability[day] = '';
         }
         updatedAvailability[day] = '';
         setIsWindowVisible(false);
@@ -115,12 +168,21 @@ function Calendar() {
 
   return (
     <>
-    <div className='container'>
-      <div className="mt-3">
-        {constraintsNum == 10 ?<p>לא נותרו אילוצים </p>: <p>אילוצים : 10 / {constraintsNum}</p>}
+    <nav className="navbar bg-body-tertiary mb-4">
+      <div className="container-fluid">
+        <div className="mt-3">
+          {constraintsNum == 10 ?<p>לא נותרו אילוצים </p>: <p>אילוצים : 10 / {constraintsNum}</p>}
+        </div>
+        <div>
+          <button onClick={submit} className="btn btn-outline-success">שלח סידור</button>
+        </div>
       </div>
+    </nav>
+
+    <div className='container'>
+     
       <div className="table-container">
-        <table className="table">
+        <table className="table table-bordered">
           <thead>
             <tr>
               {daysNames.map((day, index) => (
@@ -136,6 +198,7 @@ function Calendar() {
                     id={cellIndex}
                     className={`
                       cell 
+                      ${availability[cell] === 'no' ? 'not-available' : ''} 
                       ${availability[cell] === 'allDay' ? 'selected' : ''} 
                       ${availability[cell] !== 'allDay' && availability[cell] !== '' && cell !== 0? 'selected-constraint' : ''} 
                       ${activeCell === cell ? 'active' : ''} 
@@ -144,7 +207,10 @@ function Calendar() {
                     key={cellIndex}
                     onClick={() => handleCellClick(cell)}
                   >
-                    <label>{cell === 0 ? '' : cell}</label>
+                    <Cell 
+                      cell={cell}
+                      availability={availability}
+                    />
                   </td>
                 ))}
               </tr>
@@ -155,10 +221,10 @@ function Calendar() {
 
       {isModalVisible && (
         <Modal
-          title="הגעת למגבלת האילוצים"
-          bodyContent={<p>לא ניתן לקבוע יותר מ-10 אילוצים בחודש.</p>}
+          title={modalTitle}
+          bodyContent={modalContent}
+          button={modalButton}
           isVisible={isModalVisible}
-          onClose={() => setModalVisible(false)}
           onConfirm={() => {
             setModalVisible(false);
           }}
@@ -173,6 +239,7 @@ function Calendar() {
         onClose={handleCloseWindow} 
         constraint={handelConstraint}
         availability={availability}
+        notAvailable={notAvailable}
       />
     </>
   );

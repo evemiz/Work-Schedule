@@ -7,6 +7,7 @@ function FormWindow(props) {
   // Update the selectedOptions only when the day changes
   useEffect(() => {
     const availability = props.availability[props.day]; // Access availability for the specific day
+  
     if (availability) {
       setSelectedOptions({
         1: availability.morning || false,
@@ -14,7 +15,16 @@ function FormWindow(props) {
         3: availability.evening || false,
       });
     }
-  }, [props.day]); // Dependency array only includes day
+  
+    // Check if selectedOptions has all values set to true
+    if (selectedOptions[1] && selectedOptions[2] && selectedOptions[3]) {
+      setSelectedOptions({
+        1: availability.morning || false,
+        2: availability.noon || false,
+        3: availability.evening || false,
+      });
+    }
+  }, [props.day, selectedOptions]);
 
   function toggleOption(option) {
     setSelectedOptions((prevSelected) => {
@@ -47,7 +57,7 @@ function FormWindow(props) {
       <div className="form-check form-check-inline me-4 ms-1">
         <button
           type="button"
-          className={`${selectedOptions[1] ? 'selected-btn' : ''}`}
+          className={`form-button ${selectedOptions[1] ? 'selected-btn' : ''}`}
           onClick={() => toggleOption(1)}
         >
           בוקר
@@ -57,7 +67,7 @@ function FormWindow(props) {
       <div className="form-check form-check-inline mx-1">
         <button
           type="button"
-          className={`${selectedOptions[2] ? 'selected-btn' : ''}`}
+          className={`form-button ${selectedOptions[2] ? 'selected-btn' : ''}`}
           onClick={() => toggleOption(2)}
         >
           צהריים
@@ -67,7 +77,7 @@ function FormWindow(props) {
       <div className="form-check form-check-inline mx-1">
         <button
           type="button"
-          className={`${selectedOptions[3] ? 'selected-btn' : ''}`}
+          className={`form-button ${selectedOptions[3] ? 'selected-btn' : ''}`}
           onClick={() => toggleOption(3)}
         >
           ערב

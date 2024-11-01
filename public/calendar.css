@@ -1,5 +1,5 @@
 html, body {
-    margin: 0 10px;
+    margin: 0;
     font-family: "Fredoka", sans-serif;
     height: 100%; /* Ensure full height */
 }
@@ -10,7 +10,7 @@ html, body {
 
 .table-container {
     display: flex;
-    padding-bottom: 200px; /* Space for footer height */
+    padding-bottom: 500px; /* Space for footer height */
 }
 
 table {
@@ -33,7 +33,6 @@ label {
 
 .cell {
     background-color: rgba(246, 247, 247, 0.738) !important;
-    border: 3px solid white;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -56,6 +55,20 @@ label {
     background-color: rgb(255, 198, 63) !important;
 }
 
+.cell.not-available {
+    background-color: rgb(255, 63, 63) !important;
+}
+
+.cell-container {
+    height: 5rem;
+    text-align: start;
+}
+
+p.constraint {
+    color: rgb(61, 61, 61);
+    font-size: 0.8em;
+}
+
 @media (max-width: 490px) {
     label {
         height: 10vh;
@@ -66,4 +79,12 @@ label {
     }
 }
 
+@media (max-width: 385px){
+    p.constraint {
+        font-size: 2.9vw;
+    }
+    .cell-container {
+        height: 3.5rem;
+    }
+}
 
