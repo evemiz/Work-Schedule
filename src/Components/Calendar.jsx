@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Window from './Window';
+import Modal from './Modal';
 import '../../public/calendar.css';
 
 const generateCalendar = (year, month) => {
@@ -24,54 +25,76 @@ function Calendar() {
   const year = 2024;
   const month = 10;
 
-  const [selectedDates, setSelectedDates] = useState([]);
   const [activeCell, setActiveCell] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [isWindowVisible, setIsWindowVisible] = useState(false);
   const [availability, setAvailability] = useState(Object.fromEntries(
     Array.from({ length: new Date(year, month, 0).getDate() }, (_, i) => [i + 1, ''])
   ));
+  const [constraintsNum, setConstraintsNum] = useState(0);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const daysNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'שבת'];
   const rows = generateCalendar(year, month);
 
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
   // Function to handle availability constraints based on user selection
   // Called from <FormWindow />
   function handelConstraint (constraint, day) {
-    setAvailability((prevAvailability) => {
-      const updatedAvailability = { ...prevAvailability };
-        if (updatedAvailability[day] === '' || updatedAvailability[day] === 'allDay') {
-        updatedAvailability[day] = {
-          morning: constraint === 'morning',
-          noon: constraint === 'noon',
-          evening: constraint === 'evening'
-        };
-      } else {
-        updatedAvailability[day] = {
-          ...updatedAvailability[day],
-          [constraint]: !updatedAvailability[day][constraint]
-        };
-      }
-      return updatedAvailability;
-    });
+    if(constraintsNum >= 10 && (availability[day] === '' || availability[day] === 'allDay')) {
+      openModal();
+    }
+    else{
+      setAvailability((prevAvailability) => {
+        const updatedAvailability = { ...prevAvailability };
+          if (updatedAvailability[day] === '' || updatedAvailability[day] === 'allDay') {
+          updatedAvailability[day] = {
+            morning: constraint === 'morning',
+            noon: constraint === 'noon',
+            evening: constraint === 'evening'
+          };
+          setConstraintsNum(prev => prev + 1);
+        } else {
+          updatedAvailability[day] = {
+            ...updatedAvailability[day],
+            [constraint]: !updatedAvailability[day][constraint]
+          };
+  
+          // Check if all options are true
+          const allSelected = 
+          updatedAvailability[day].morning &&
+          updatedAvailability[day].noon &&
+          updatedAvailability[day].evening;
+  
+          // If all options are true, set to 'allDay'
+          if (allSelected) {
+            updatedAvailability[day] = 'allDay';
+            setConstraintsNum(prev => prev - 1);
+          }
+        }
+        return updatedAvailability;
+      });
+    }
   }
 
   // Function to handle cell click events in the calendar
   const handleCellClick = (day) => {
     if (day === 0) return;
 
-    setSelectedDates((prevSelectedDates) => 
-      prevSelectedDates.includes(day) 
-        ? prevSelectedDates.filter((d) => d !== day)
-        : [...prevSelectedDates, day]
-    );
-
     setAvailability((prevAvailability) => {
       const updatedAvailability = { ...prevAvailability };
-        if (updatedAvailability[day] === '') {
+      if (updatedAvailability[day] === '') {
         updatedAvailability[day] = 'allDay';
+        setIsWindowVisible(true);
       } else {
+        if (updatedAvailability[day] !== 'allDay'){
+          setConstraintsNum(prev => prev - 1);
+        }
         updatedAvailability[day] = '';
+        setIsWindowVisible(false);
       }
       return updatedAvailability;
     });
@@ -80,7 +103,6 @@ function Calendar() {
 
     setActiveCell(day);
     setSelectedDay(day);
-    setIsWindowVisible(true);
     setTimeout(() => {
       setActiveCell(null);
     }, 300);
@@ -92,7 +114,11 @@ function Calendar() {
   };
 
   return (
-    <div>
+    <>
+    <div className='container'>
+      <div className="mt-3">
+        {constraintsNum == 10 ?<p>לא נותרו אילוצים </p>: <p>אילוצים : 10 / {constraintsNum}</p>}
+      </div>
       <div className="table-container">
         <table className="table">
           <thead>
@@ -110,7 +136,8 @@ function Calendar() {
                     id={cellIndex}
                     className={`
                       cell 
-                      ${selectedDates.includes(cell) ? 'selected' : ''} 
+                      ${availability[cell] === 'allDay' ? 'selected' : ''} 
+                      ${availability[cell] !== 'allDay' && availability[cell] !== '' && cell !== 0? 'selected-constraint' : ''} 
                       ${activeCell === cell ? 'active' : ''} 
                       ${cell === 0 ? 'empty-cell' : ''}
                     `}
@@ -126,7 +153,19 @@ function Calendar() {
         </table>
       </div>
 
-      <Window 
+      {isModalVisible && (
+        <Modal
+          title="הגעת למגבלת האילוצים"
+          bodyContent={<p>לא ניתן לקבוע יותר מ-10 אילוצים בחודש.</p>}
+          isVisible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          onConfirm={() => {
+            setModalVisible(false);
+          }}
+        />
+      )}
+    </div>
+    <Window 
         isVisible={isWindowVisible} 
         day={selectedDay} 
         month={month}
@@ -135,7 +174,7 @@ function Calendar() {
         constraint={handelConstraint}
         availability={availability}
       />
-    </div>
+    </>
   );
 }
 

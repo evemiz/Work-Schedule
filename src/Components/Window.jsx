@@ -20,7 +20,7 @@ function Window (props) {
        {props.isVisible && 
         <div>
             <button className="close-button" onClick={props.onClose}>X</button>
-            <h1>{formatDateInHebrew(props.year, props.month, props.day)}</h1>
+            <h1 className='mx-5'>{formatDateInHebrew(props.year, props.month, props.day)}</h1>
             <div className='form-div'>
                 <h3>יכול רק:</h3>
                 <FormWindow 
@@ -32,7 +32,6 @@ function Window (props) {
             
         </div>
        }
-
     </div>
   );
 };

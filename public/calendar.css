@@ -4,9 +4,13 @@ html, body {
     height: 100%; /* Ensure full height */
 }
 
+.container {
+    margin-bottom: 50vw;
+}
+
 .table-container {
     display: flex;
-    padding-bottom: 100px; /* Space for footer height */
+    padding-bottom: 200px; /* Space for footer height */
 }
 
 table {
@@ -29,14 +33,14 @@ label {
 
 .cell {
     background-color: rgba(246, 247, 247, 0.738) !important;
-    border: 1px solid white;
+    border: 3px solid white;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .cell.active {
-    transform: scale(1.1);
+    transform: scale(1.03);
 }
 
 
@@ -45,7 +49,11 @@ label {
 }
 
 .cell.selected {
-    background-color: rgb(240, 199, 242) !important;
+    background-color: rgb(143, 255, 173) !important;
+}
+
+.cell.selected-constraint {
+    background-color: rgb(255, 198, 63) !important;
 }
 
 @media (max-width: 490px) {
