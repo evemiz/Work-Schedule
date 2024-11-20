@@ -1,0 +1,122 @@
+html, body {
+    margin: 0;
+    height: 100%; /* Ensure full height */
+    font-family: -apple-system, BlinkMacSystemFont, 'Rubik','Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif,;
+}
+
+.customOffcanvasStyle {
+    max-height: none !important;    
+    height: auto !important; 
+    padding-bottom: 1rem !important;
+}
+
+.offcanvas-date{
+    display: block;
+}
+
+@keyframes shake {
+    0% { transform: translate(0); }
+    25% { transform: translate(-5px); }
+    50% { transform: translate(5px); }
+    75% { transform: translate(-5px); }
+    100% { transform: translate(0); }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+.red, .green, .orange{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.constraint-p{
+    display: inline;
+}
+
+.red{
+    background-color: red;
+}
+
+.green {
+    background-color: green;
+}
+
+.orange {
+    background-color: orange;
+}
+
+.colors-div {
+    max-width: 400px;
+    font-size: 0.85rem;
+}
+
+.no-checked {
+    background-color: red !important;
+    color: white !important;
+    border: none !important;
+}
+
+.all-day-checked{
+    background-color: green !important;
+    color: white !important;
+    border: none !important;
+}
+
+.yes-checked:active {
+    background-color: rgb(174, 226, 174) !important;
+    border: none !important;
+}
+
+.user-bi {
+    display: inline-block;
+    vertical-align: -.125em;
+    fill: currentcolor;
+    margin-left: 10px;
+}
+
+.user-name {
+    padding: 5px 20px;
+    background-color: rgb(226, 225, 223);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.form-floating>label {
+    left: auto;
+}
+
+.emp-main {
+    background-color: rgb(238, 237, 237);
+    height: 100vh;
+}
+
+.emp-modal-sched-title{
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 0 10px;
+    font-size: 1.2rem;
+}
+
+.past-day {
+    position: relative;
+    background-color: #ffffff; /* White background */
+    color: #a9a9a9; /* Lighter text color for past days */
+    opacity: 0.6; /* Optional: Adjust opacity for a faded effect */
+}
+
+/* Create a diagonal line from top-left to bottom-right */
+.past-day::before {
+    content: ''; /* Empty content for the pseudo-element */
+    position: absolute; /* Position it relative to the parent */
+    top: 0; /* Start from the top */
+    left: 0; /* Start from the left */
+    width: 100%; /* Stretch the line to full width */
+    height: 100%; /* Stretch the line to full height */
+    background: linear-gradient(45deg, transparent 49%, #a6a5a5 49%, #a6a5a5 51%, transparent 51%); /* Diagonal line effect */
+    pointer-events: none; /* Make sure the line doesn't interfere with clicks */
+}

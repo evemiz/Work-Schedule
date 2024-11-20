@@ -1,0 +1,61 @@
+.user-form-page {
+    background-color: rgb(241, 238, 234);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 2em 3em;
+}
+
+
+.text-right-label {
+    text-align: right;
+    width: 100%;
+    display: block;
+}
+
+.login-p{
+    display: inline-block;
+}
+
+.user-form-input{
+    height: 3rem;
+}
+
+.tooltip-style {
+  position: absolute;
+  width: 200px;
+}
+
+.help-btn{
+  background-color: transparent;
+  border: none;
+}
+
+.error-login {
+    color: red;
+}
+  
+  @keyframes shake {
+    0% { transform: translate(0); }
+    25% { transform: translate(-5px); }
+    50% { transform: translate(5px); }
+    75% { transform: translate(-5px); }
+    100% { transform: translate(0); }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+
+.user-login-container {
+    max-width: 500px;
+    width: 100%; /* Ensures it’s responsive on smaller screens */
+    margin: 0 auto; 
+    padding: 20px;
+}
+  
+  
+  
+  
+  

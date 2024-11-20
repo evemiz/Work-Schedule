@@ -1,0 +1,130 @@
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin: 20px 0;
+  }
+  
+  .calendar-header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.3rem;
+    border: 1px solid black;
+    border-radius: 10px;
+  }
+  
+  .calendar-day {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 1.2rem;
+    border: 1px solid #b4b4b4;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .empty{
+    background-color: #a09c9cb4;
+    cursor: auto;
+    border: 1px solid black;
+  }
+  
+  .calendar-day.active {
+    background-color: #f2f2f2bd;
+  }
+  
+  .calendar-time-slot {
+    text-align: center;
+    padding: 3px;
+    width: 100%;
+    font-size: 1.1rem;
+  }
+
+  .day-title{
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+  
+  .active:hover {
+    background-color: #ddd;
+  }
+  
+  .employee-li {
+    margin: 5px 0;
+    list-style-type: none;
+    font-size: 1.4em;
+    width: 100%;
+    text-align: center; 
+    border-radius: 10px;  
+    border: 3px solid rgb(232, 232, 232);
+    cursor: pointer;
+  }
+
+  .employee-li:hover {
+    border: 3px solid rgb(212, 228, 255) !important;
+  }
+
+  .emp-li-table{
+    list-style-type: none;
+  }
+
+  .day-title-modal {
+    font-size: 1.3em;
+    font-weight: 500;
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  .day-title-modal:hover {
+    color: rgb(121, 123, 123);
+  }
+
+  .available-emps-title {
+    font-size: 1.1em;
+    font-weight: 400;
+  }
+
+  .delete-emp-btn {
+    display: block;
+  }
+
+  .no-availble-list{
+    font-size: 1.2em;
+    font-weight: 400;
+    color: red;
+  }
+
+  .selected-emp {
+    border: 3px solid rgb(212, 228, 255) !important;
+    background-color: rgba(202, 218, 251, 0.786);
+    color: white !important;
+  }
+
+  .selected-shift {
+    color: rgb(75, 109, 171) !important;
+    background-color: rgb(235, 243, 243);
+    border-radius: 10px;
+    padding: 2px 15px;
+  }
+
+  .day-number{
+    font-size: 23px;
+    font-weight: bold;
+    margin-left: 10px;
+    border-bottom: 1px solid black;
+    padding-right: 10px;
+  }
+
+  .day-comment{
+    font-size: 17px;
+    margin-left: 10px;
+    margin-top: 3px;
+    color: rgb(26, 37, 151);
+  }
+
+  .emp-has-comment{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }

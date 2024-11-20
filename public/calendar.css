@@ -1,0 +1,115 @@
+@media print {
+    body {
+      direction: rtl; /* Ensures RTL layout */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+  
+    /* Ensure the table takes the full page width and adjusts to the size */
+    #calendar-table {
+      display: block;
+      width: 100%; /* Ensure the table fits the page width */
+      box-sizing: border-box;
+      margin: 0 auto; /* Center the table */
+      page-break-before: always; /* Ensures the table starts on a new page */
+    }
+  
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-gap: 5px;
+      width: 100%;
+      box-sizing: border-box;
+      page-break-inside: auto; /* Allow breaks inside the grid */
+    }
+  
+    .calendar-header {
+      display: none;
+    }
+  
+    .calendar-day {
+      border: 1px solid #ddd;
+      padding: 5px;
+      background-color: #fff;
+      position: relative;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      box-sizing: border-box;
+      font-size: 0.8em; /* Reduce font size for print */
+      width: 6rem;
+      min-height: 3rem; /* Ensure a minimum height for each day */
+      overflow: hidden; /* Hide overflow if the content is too large */
+      page-break-inside: avoid; /* Prevent breaking inside a day */
+    }
+  
+    .calendar-time-slot {
+      margin-top: 5px;
+    }
+  
+    .calendar-time-slot span {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.8em;
+    }
+  
+    .emp-li-table {
+      margin: 0;
+      font-size: 0.8em;
+      text-align: right;
+      white-space: nowrap;
+      overflow-wrap: break-word;
+    }
+  
+    .day-comment {
+      font-style: italic;
+      color: #555;
+      font-size: 1.2em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  
+    p {
+      font-size: 0.8em;
+    }
+  
+    /* Hide the print button during printing */
+    button {
+      display: none;
+    }
+
+  
+    /* Adjust the font size for the entire table */
+    #calendar-table, .calendar-header, .calendar-day {
+      font-size: 0.7em; /* Decrease font size for the entire table */
+    }
+  
+    /* Adjust margins and padding to avoid content overflow */
+    .calendar-grid {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  
+    /* Prevent content from being cut off on the page */
+    .calendar-day, .calendar-header {
+      padding: 3px;
+      white-space: normal;
+      word-wrap: break-word;
+      min-width: 6rem; /* Ensure that each day div is wide enough */
+      max-width: 10rem; /* Limit the width if necessary to avoid cutting off */
+    }
+  
+    /* Ensure page breaks are handled without cutting the table */
+    .calendar-grid {
+      page-break-inside: avoid; /* Avoid splitting the grid */
+    }
+  
+    /* Force a page break after every calendar-grid to ensure it flows properly */
+    .calendar-grid {
+      page-break-after: always;
+    }
+  }
+  
