@@ -23,20 +23,18 @@ font-family: "Fredoka";
 }
 `;
 
-function NewSchedule({ handleCreateSchedule }) {
+function NewSchedule({ handleCreateSchedule, employees }) {
     const [selectedMonth, setSelectedMonth] = useState(null);
     const [selectedYear, setSelectedYear] = useState(null);
     const [shake, setShake] = useState(false);
     const [constraints, setConstraints] = useState("");
+    const [missings, setMissings] = useState("");
     const [selectedDate, setSelectedDate] = useState(null);
-
     const [morningEmployees, setMorningEmployees] = useState(3);
     const [eveningEmployees, setEveningEmployees] = useState(2);
     const [nightEmployees, setNightEmployees] = useState(1);
     const [comment, setComment] = useState("");
-
-    const [allComments, setAllComments] = useState({});
-
+    const [selectedEmps, setSelectedEmps] = useState([]);
     const [modified, setModified] = useState({});
 
     const hebrewMonths = [
@@ -63,13 +61,17 @@ function NewSchedule({ handleCreateSchedule }) {
         if (!/^\d+$/.test(constraints)) {
             setConstraints(""); // Reset constraints if it's not a number
         }
+
+        if (!/^\d+$/.test(missings)) {
+            setMissings(""); // Reset constraints if it's not a number
+        }
     
-        if (!selectedMonth || !selectedYear || constraints === "" || !/^\d+$/.test(constraints)) {
+        if (!selectedMonth || !selectedYear || constraints === "" || !/^\d+$/.test(constraints) || !/^\d+$/.test(missings)) {
             setShake(true);
             return;
         }
     
-        handleCreateSchedule(selectedMonth, selectedYear, constraints, modified);
+        handleCreateSchedule(selectedMonth, selectedYear, constraints, modified, missings);
     };
 
     // Remove shake effect after a short delay
@@ -88,10 +90,12 @@ function NewSchedule({ handleCreateSchedule }) {
 
         if(modified.hasOwnProperty(day)){
             setComment(modified[day].comment);
+            setSelectedEmps(modified[day].notWorking);
         }
 
         else{
             setComment("");
+            setSelectedEmps([]);
         }
       
         const offcanvas = new window.bootstrap.Offcanvas(document.getElementById('offcanvasBottom'));
@@ -104,7 +108,8 @@ function NewSchedule({ handleCreateSchedule }) {
             morning: morningEmployees,
             evening: eveningEmployees,
             night: nightEmployees,
-            comment: comment
+            comment: comment,
+            notWorking: selectedEmps
         }
         const dayKey = parseInt(selectedDate.format('DD'), 10);
 
@@ -127,6 +132,17 @@ function NewSchedule({ handleCreateSchedule }) {
             backdrop.remove();
         }
     }
+
+    const handleEmployeeClick = (emp) => {
+        setSelectedEmps((prevSelectedEmps) => {
+            if (prevSelectedEmps.includes(emp.user_id)) {
+                return prevSelectedEmps.filter((user_id) => user_id !== emp.user_id);
+            } else {
+                return [...prevSelectedEmps, emp.user_id];
+            }
+        });
+        console.log(selectedEmps);
+    };
 
     return (
         <div>
@@ -159,6 +175,15 @@ function NewSchedule({ handleCreateSchedule }) {
                             onChange={(event) => setConstraints(event.target.value)} 
                             className={`form-control ${constraints === "" && shake ? 'shake' : ''}`}
                             placeholder="מספר אילוצים" 
+                            id="floatingTextarea"
+                        />
+                    </div>
+                    <div className="my-4">
+                        <input 
+                            value={missings} 
+                            onChange={(event) => setMissings(event.target.value)} 
+                            className={`form-control ${constraints === "" && shake ? 'shake' : ''}`}
+                            placeholder="מספר היעדרויות" 
                             id="floatingTextarea"
                         />
                     </div>
@@ -214,56 +239,84 @@ function NewSchedule({ handleCreateSchedule }) {
                 </div>
                     <div className="offcanvas-body mx-5">
                         <form onSubmit={(e) => { handleDayModify(e)}} >
+
+                            <div className="container">
+                                <div className="row g-5">
+                                    <div className="col-8">
+                                        {/* Morning Shift */}
+                                        <div className="mb-3">
+                                            <label>מספר עובדים לבוקר</label>
+                                            <div className="input-group">
+                                                <input 
+                                                    type="number" 
+                                                    className="form-control text-center" 
+                                                    value={morningEmployees} 
+                                                    onChange={(e) => setMorningEmployees(parseInt(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Evening Shift */}
+                                        <div className="mb-3">
+                                            <label>מספר עובדים לערב</label>
+                                            <div className="input-group">
+                                                <input 
+                                                    type="number" 
+                                                    className="form-control text-center" 
+                                                    value={eveningEmployees} 
+                                                    onChange={(e) => setEveningEmployees(parseInt(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Night Shift */}
+                                        <div className="mb-3">
+                                            <label>מספר עובדים ללילה</label>
+                                            <div className="input-group">
+                                                <input 
+                                                    type="number" 
+                                                    className="form-control text-center" 
+                                                    value={nightEmployees} 
+                                                    onChange={(e) => setNightEmployees(parseInt(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Comment Section */}
+                                        <div className="mb-3">
+                                            <label>הוסף הערה ליום זה</label>
+                                            <textarea 
+                                                className="form-control" 
+                                                placeholder="הערה..." 
+                                                value={comment}
+                                                onChange={(e) => setComment(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col pe-5">
+                                        <label className="">סמן את העובדים שביום חופש</label>
+                                        {employees && employees.length > 0 ? (
+                                            <ul className="list-group list-group-flush p-0 mt-2">
+                                            {employees.map((emp) => (
+                                                <li 
+                                                    key={emp.id}
+                                                    className={`emp-li list-group-item ${selectedEmps.some((selectedEmp) => selectedEmp === emp.user_id) ? 'selected' : ''}`}
+                                                    onClick={() => handleEmployeeClick(emp)}
+                                                    style={{cursor: 'pointer'}}
+                                                >
+                                                {emp.name}
+                                                </li>
+                                            ))}
+                                            </ul>
+                                        ) : (
+                                            <p>לא נמצאו עובדים</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                             
-                            {/* Morning Shift */}
-                            <div className="mb-3">
-                                <label>מספר עובדים לבוקר</label>
-                                <div className="input-group">
-                                    <input 
-                                        type="number" 
-                                        className="form-control text-center" 
-                                        value={morningEmployees} 
-                                        onChange={(e) => setMorningEmployees(parseInt(e.target.value))}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Evening Shift */}
-                            <div className="mb-3">
-                                <label>מספר עובדים לערב</label>
-                                <div className="input-group">
-                                    <input 
-                                        type="number" 
-                                        className="form-control text-center" 
-                                        value={eveningEmployees} 
-                                        onChange={(e) => setEveningEmployees(parseInt(e.target.value))}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Night Shift */}
-                            <div className="mb-3">
-                                <label>מספר עובדים ללילה</label>
-                                <div className="input-group">
-                                    <input 
-                                        type="number" 
-                                        className="form-control text-center" 
-                                        value={nightEmployees} 
-                                        onChange={(e) => setNightEmployees(parseInt(e.target.value))}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Comment Section */}
-                            <div className="mb-3">
-                                <label>הוסף הערה ליום זה</label>
-                                <textarea 
-                                    className="form-control" 
-                                    placeholder="הערה..." 
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                />
-                            </div>
+                            
 
                             {/* Submit Button */}
                             <button type="submit" className="btn btn-primary mt-3">שמור</button>

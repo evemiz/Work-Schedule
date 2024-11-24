@@ -155,3 +155,15 @@ th {
     border-radius: 10px;
     width: fit-content;
 }
+
+.shifts-day-title{
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-top: 7px;
+    font-size: 1.1vw;
+}
+
+.selected {
+    background-color: #e2e6ea; /* Change the background color to highlight selected items */
+    font-weight: bold; 
+}

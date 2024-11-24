@@ -26,6 +26,9 @@ function Modal(props) {
             </div>
             <div className="modal-body">
               {bodyContent}
+              {title === "האם אתה בטוח שברצונך לשלוח את הסידור ?" && 
+              <p className="mt-3" style={{color: 'red'}}>* תזכורת - חופשה ארוכה יש לעדכן חודש לפני !</p>
+              }
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-primary" onClick={props.onClose}>{button}</button>

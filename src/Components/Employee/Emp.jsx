@@ -55,8 +55,10 @@ function BasicDateCalendar() {
     night: false,
   });
   const [constraintsCounter, setConstraintsCounter] = useState(0);
+  const [missingsCounter, setMissingsCounter] = useState(0);
   const [month, setMonth] = useState(dayjs('2024-11-01'));
   const [maxConstraints, setMaxConstraints] = useState(10);
+  const [maxMissings, setMaxMissings] = useState(10);
   const [shake, setShake] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
@@ -71,6 +73,7 @@ function BasicDateCalendar() {
   const [constantConstraint, setConstantConstraint] = useState(false);
   const [comments, setComments] = useState("");
   const [modifiedDays, setModifiedDays] = useState({});
+  const [daysOff, setDaysOff] = useState([]);
 
   const navigate = useNavigate(); 
 
@@ -118,9 +121,19 @@ function BasicDateCalendar() {
           const docSnapEmp = await getDoc(docRefEmp);
           const fetchConstraints = docSnapEmp.data().constraints;
 
-          const startOfMonth = month;
-          const endOfMonth = month.endOf('month');
-          
+          let startOfMonth;
+          let endOfMonth;
+
+          const querySnapshot = await getDocs(scheduleCollection);
+          if(querySnapshot.empty){
+            navigate('/noSchedule');
+          } else {
+            const scheduleDoc = querySnapshot.docs[0].data();
+            let temp = dayjs(`${scheduleDoc.year}-${scheduleDoc.month}-01`);
+            startOfMonth = temp;
+            endOfMonth = temp.endOf('month');
+          }
+
           for(let i=0 ; i<7 ; i++) {
             if(fetchConstraints[i].length !== 0){
               let tempDay = [0,0,0];
@@ -159,9 +172,22 @@ function BasicDateCalendar() {
         navigate('/noSchedule');
       } else {
         const scheduleDoc = querySnapshot.docs[0].data();
-        setMonth(dayjs(`${scheduleDoc.year}-${scheduleDoc.month}-01`))
-        setMaxConstraints(scheduleDoc.constraints)
-        setModifiedDays(scheduleDoc.modifyEmpsNum)
+        setMonth(dayjs(`${scheduleDoc.year}-${scheduleDoc.month}-01`));
+        setMaxConstraints(scheduleDoc.constraints);
+        setModifiedDays(scheduleDoc.modifyEmpsNum);
+        setMaxMissings(scheduleDoc.missings);
+
+        let notWorkingDays = [];
+        for(let day in scheduleDoc.modifyEmpsNum){
+          for(let emp in scheduleDoc.modifyEmpsNum[day].notWorking){
+            const curEmp = scheduleDoc.modifyEmpsNum[day].notWorking[emp];
+            if(curEmp === auth.currentUser.uid){
+              notWorkingDays.push(parseInt(day, 10));
+            }
+          }
+        }
+
+        setDaysOff(notWorkingDays);
 
         const daysInMonth = dayjs(new Date(scheduleDoc.year, scheduleDoc.month, 0)).date();
         const initialAvailability = Array.from({ length: daysInMonth }, () => [0, 0, 0]);
@@ -270,6 +296,23 @@ const saveInAvailability = (event) => {
         setConstraintsCounter(prev => prev-1);
       }
     }
+    if(missingsCounter > 0 && !isNew && !shifts.morning && !shifts.evening && !shifts.night && !daysOff.includes(curDay+1)){
+      setMissingsCounter(prev => prev-1);
+    }
+    if(missingsCounter > 0 && !isNew && !(!shifts.morning && !shifts.evening && !shifts.night) && !daysOff.includes(curDay+1)){
+      setMissingsCounter(prev => prev-1);
+    }
+    if(noChecked && !daysOff.includes(curDay+1)) {
+        if(missingsCounter >= maxMissings){
+          setModalTitle("הגעת למגבלת ההיעדרויות");
+          setModalContent(`לא ניתן לקבוע יותר מ-${maxMissings} חופשים בחודש.`);
+          setModalButton("הבנתי");
+          setModalVisible(true);
+          return;
+        }
+        setMissingsCounter(prev => prev+1);
+    }
+
     if(!noChecked  && (!shifts.morning || !shifts.evening || !shifts.night) && isNew && !constantConstraint){
         if(constraintsCounter >= maxConstraints){
             setModalTitle("הגעת למגבלת האילוצים");
@@ -423,6 +466,7 @@ const handleAvailabilityChoice = (event) => {
                           </div>
                         </div>}
                         {constraintsCounter == maxConstraints ?<p className='constraint-p'>לא נותרו אילוצים </p>: <p className='constraint-p'>אילוצים : {maxConstraints} / {constraintsCounter}</p>}
+                        {missingsCounter == maxMissings ?<p className='constraint-p me-4'>לא נותרו חופשים </p>: <p className='constraint-p me-4'>חופשים : {maxMissings} / {missingsCounter}</p>}
                         </div>
                         <div>
                         <button onClick={submit} className="btn btn-outline-success">הגש סידור</button>
@@ -509,6 +553,15 @@ const handleAvailabilityChoice = (event) => {
                             {modifiedDays[parseInt(selectedDate.format('DD'), 10)].comment}
                         </div>
                         )}
+
+                    {selectedDate && daysOff.length > 0 && daysOff.includes(parseInt(selectedDate.format('DD'), 10)) && (
+                      <div className='mb-3'>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" className="bi bi-check-circle-fill ms-3" viewBox="0 0 16 16">
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                        יום חופש מאושר
+                      </div>
+                    )}
                     <form onSubmit={saveInAvailability}>
 
                     {selectedDate && constraints.hasOwnProperty(selectedDate.format('DD')) && (

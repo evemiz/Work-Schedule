@@ -119,13 +119,14 @@ function Admin() {
         }
     };
 
-    const handleCreateSchedule = async (selectedMonth, selectedYear, constraints, modified) => {
+    const handleCreateSchedule = async (selectedMonth, selectedYear, constraints, modified, missings) => {
         setLoading(true);
         try {
             const newScheduleRef = doc(scheduleCollection);
-            await setDoc(newScheduleRef, { month: selectedMonth, year: selectedYear, constraints: parseInt(constraints, 10), modifyEmpsNum: modified });
+            await setDoc(newScheduleRef, { month: selectedMonth, year: selectedYear, constraints: parseInt(constraints, 10), modifyEmpsNum: modified, missings: parseInt(missings, 10)});
             setDate({ month: selectedMonth, year: selectedYear });
         } catch (error) {
+            console.log(error);
             alert("שגיאה לא צפויה");
         } finally {
             setLoading(false);
@@ -147,6 +148,7 @@ function Admin() {
                         fetchEmployees={fetchEmployees}
                         adminName={adminName}
                         handelLogout={handelLogout}
+                        date={date}
                     />
                     {date ? (
                         <div>
@@ -170,6 +172,7 @@ function Admin() {
                     ) : (
                         <NewSchedule 
                             handleCreateSchedule={handleCreateSchedule}
+                            employees={employees}
                         />
                     )}
                 </>

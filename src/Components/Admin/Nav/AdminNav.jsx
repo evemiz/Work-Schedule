@@ -6,8 +6,9 @@ import NewEmployeeForm from "./NewEmployeeForm";
 import EmployeeList from "./EmployeeList";
 import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
+import { useNavigate } from "react-router-dom";
 
-function Navbar({ adminName, setLoading, employees, fetchEmployees, handelLogout }) {
+function Navbar({ adminName, setLoading, employees, fetchEmployees, handelLogout, date }) {
     const [employee, setEmployee] = useState({ name: '', id: '' });
     const [inputValidityName, setInputValidityName] = useState(null);
     const [inputValidityId, setInputValidityId] = useState(null);
@@ -17,6 +18,7 @@ function Navbar({ adminName, setLoading, employees, fetchEmployees, handelLogout
     });
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const navigate = useNavigate();
     
 
     const daysOfWeek = [
@@ -142,18 +144,27 @@ function Navbar({ adminName, setLoading, employees, fetchEmployees, handelLogout
         }
     };
 
+    function handleShiftsView() {
+        navigate('/view', {
+            state: { 
+                employees: employees,
+                date: date
+            },
+        });
+    }
+
     return (
         <div>
             <nav className="navbar bg-body-tertiary">
                 <div className="container-fluid">
                     {adminName && 
-                    <div className="row align-items-center">
-                        <div className="col-4">
+                    <div className="row d-flex align-items-center">
+                        <div className="col-2">
                             <IconButton onClick={handelLogout} aria-label="delete">
                                 <LogoutIcon color="success"/>
                             </IconButton>
                         </div>
-                        <div className="col-8">
+                        <div className="col-5">
                             <div className='admin-name'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="user-bi bi-person-circle" viewBox="0 0 16 16">
                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
@@ -162,12 +173,19 @@ function Navbar({ adminName, setLoading, employees, fetchEmployees, handelLogout
                                 {adminName}
                             </div>
                         </div>
-
+                        <div className="col-4">
+                            {date && 
+                                <button onClick={handleShiftsView} className="btn btn-outline-primary">משמרות</button>
+                            }
                         </div>
-                        }
+                    </div>
+                }
+                    
                     <button className="menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                         <i className="bi bi-grid-fill"></i>
                     </button>
+
+                    
                 </div>
             </nav>
 

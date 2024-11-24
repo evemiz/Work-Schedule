@@ -6,6 +6,7 @@ import SignUp from "./Components/User/Register";
 import Admin from "./Components/Admin/Admin";
 import NoSchedule from "./Components/Employee/NoSchedule";
 import ExistSchedule from "./Components/Employee/ExistSchedule";
+import View from "./Components/Admin/ViewShifts";
 
 import Emp from "./Components/Employee/Emp";
 
@@ -20,6 +21,7 @@ const AppRoutes = () => {
                     <Route path='/admin' element={<Admin />} />
                     <Route path='/noSchedule' element={<NoSchedule />} />
                     <Route path='/existSchedule' element={<ExistSchedule />} />
+                    <Route path='/view' element={<View />} />
                 </Routes>
             </main>
         </BrowserRouter>
