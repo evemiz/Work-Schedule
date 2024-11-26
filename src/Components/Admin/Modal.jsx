@@ -32,14 +32,11 @@ function Modal(props) {
   }
 
   function updateCounters(shift, action, key) {
-    
-    // Handle the case when the action is 'replace'
     if (action === 'replace') {
-      const { oldEmp, newEmp } = key; // Destructure the object
+      const { oldEmp, newEmp } = key;
       const oldEmpStr = oldEmp.join('');
       const newEmpStr = newEmp.join('');
 
-      // First, handle removing the old employee
       const newShiftsCounter = {
         ...shiftsCounter,
         [oldEmpStr]: (shiftsCounter[oldEmpStr] || 0) - 1, // Decrease the count for oldEmp
@@ -71,7 +68,6 @@ function Modal(props) {
     } else {
       const keyStr = key.join('');
 
-      // Handle add or remove actions
       const newShiftsCounter = {
         ...shiftsCounter,
         [keyStr]: (shiftsCounter[keyStr] || 0) + (action === 'add' ? 1 : -1),
@@ -225,6 +221,62 @@ function Modal(props) {
                     </li>
                   ))}
                   </div>
+
+                  {/* Check for employees with overlapping shifts */}
+                  {(() => {
+                    const currentDayShifts = Object.values(schedule[day]);
+                    const previousDayShifts = schedule[day - 1] ? schedule[day - 1].night : [];
+                    
+                    const currentDayEmployeeCount = {};
+                    const currentMorningEveningEmpsCount = {};
+                    const previousNightEmployees = new Set();
+
+                    // Count current day employee shifts
+                    for (let shift in currentDayShifts) {
+                      for (let emp of currentDayShifts[shift]) {
+                        const empId = emp.join('');
+                        currentDayEmployeeCount[empId] = (currentDayEmployeeCount[empId] || 0) + 1;
+                        if(shift != 2){
+                          currentMorningEveningEmpsCount[empId] = (currentMorningEveningEmpsCount[empId] || 0) + 1;
+                        }
+                      }
+                    }
+
+                    // Collect employees from previous night's shift
+                    for (let emp of previousDayShifts) {
+                      const empId = emp.join('');
+                      previousNightEmployees.add(empId);
+                    }
+
+                    // Find employees with multiple shifts on the current day
+                    const multipleShiftEmployees = Object.entries(currentDayEmployeeCount)
+                      .filter(([_, count]) => count > 1)
+                      .map(([id]) => id);
+
+                    // Find employees who worked the previous night's shift and also on the current day
+                    const overlappingShiftEmployees = Object.keys(currentMorningEveningEmpsCount).filter(empId => 
+                      previousNightEmployees.has(empId)
+                    );
+
+                    return (
+                      <div>
+                        <p className="mt-3" style={{ color: 'red' }}>
+                          {multipleShiftEmployees.length > 0 &&
+                            `* ${multipleShiftEmployees
+                              .map(empId => employees[empId] || "Unknown")
+                              .join(', ')} - יותר ממשמרת אחת`}
+                        </p>
+                        <p className="mt-3" style={{ color: 'blue' }}>
+                          {overlappingShiftEmployees.length > 0 &&
+                            `* ${overlappingShiftEmployees
+                              .map(empId => employees[empId] || "Unknown")
+                              .join(', ')} - משמרת לילה ביום הקודם`}
+                        </p>
+                      </div>
+                    );
+                  })()}
+
+
                   </div>
                   <div className="col">
 
