@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { adminsCollection, auth } from "../../../Utils/firebaseconfig";
-import { doc, getDoc } from "firebase/firestore"; 
+import { adminsCollection, auth, usersCollection } from "../../../Utils/firebaseconfig";
+import { doc, getDoc, updateDoc } from "firebase/firestore"; 
 import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import Loading from "../Loading";
 
+
+const hebrewMonthes = {
+    "1": "ינואר",
+    "2": "פברואר",
+    "3": "מרץ",
+    "4": "אפריל",
+    "5": "מאי",
+    "6": "יוני",
+    "7": "יולי",
+    "8": "אוגוסט",
+    "9": "ספטמבר",
+    "10": "אוקטובר",
+    "11": "נובמבר",
+    "12": "דצמבר"
+}
 
 const getDaysInMonth = (month, year) => {
     return new Date(year, month, 0).getDate();
@@ -21,6 +36,7 @@ function View() {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [loading, setLoading] =useState(false);
     const [adminName, setAdminName] = useState("");
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate();
 
     const daysInMonth = getDaysInMonth(date.month, date.year);
@@ -28,8 +44,6 @@ function View() {
     const daysArray = new Array(startDay).fill(null).concat(
         Array.from({ length: daysInMonth }, (_, i) => i + 1)
     );
-
-    console.log(employees);
 
     useEffect(() => {
         setLoading(true);
@@ -88,6 +102,26 @@ function View() {
         navigate('/admin');
       }
 
+      async function deleteSched() {
+        setLoading(true);
+        try{
+            const docRef = doc(usersCollection, selectedEmployee.user_id);
+            await updateDoc(docRef, {
+                comments: "",
+                email: selectedEmployee.email,
+                empoyee_id: selectedEmployee.id,
+                name: selectedEmployee.name,
+                shifts: ""
+            });
+            navigate('/admin');
+        } catch(err) {
+            alert("שגיאה לא צפויה, אנא נסה שוב מאוחר יותר", err);
+        } finally {
+            setLoading(false);
+            setIsModalVisible(false);
+        }
+      }
+
     return (
         <>
         <nav className="navbar bg-body-tertiary">
@@ -122,6 +156,9 @@ function View() {
                 </div>
          : (
             <div className="container mt-5">
+                <div className="row me-4">
+                    <h1>{hebrewMonthes[date.month]} {date.year}</h1>
+                </div>
             <div className="row">
                 <div className="col-3">
                     <ul className="list-group list-group-flush ps-5 mt-4">
@@ -140,7 +177,9 @@ function View() {
                     </ul>
                 </div>
                 <div className="col-9">
+                    {selectedEmployee && selectedEmployee.comments}
                     {selectedEmployee && selectedEmployee.shifts &&(
+                        <>
                         <div className="emp-calendar-grid">
                         {["א", "ב", "ג", "ד", "ה", "ו", "ש"].map((day) => (
                             <div className="emp-calendar-header" key={day}>
@@ -162,8 +201,8 @@ function View() {
                                             {selectedEmployee && selectedEmployee.shifts && 
                                             (<>
                                                 {selectedEmployee.shifts["day"+day][0] === 1 && <div style={{backgroundColor: "#F9E897"}} className="shifts-day-title">בוקר</div>}
-                                                {selectedEmployee.shifts["day"+day][1] === 1 && <div style={{backgroundColor: "lightblue"}} className="shifts-day-title">צהריים</div>}
-                                                {selectedEmployee.shifts["day"+day][2] === 1 && <div style={{backgroundColor: "#ACE1AF"}} className="shifts-day-title">ערב</div>}
+                                                {selectedEmployee.shifts["day"+day][1] === 1 && <div style={{backgroundColor: "lightblue"}} className="shifts-day-title">ערב</div>}
+                                                {selectedEmployee.shifts["day"+day][2] === 1 && <div style={{backgroundColor: "#ACE1AF"}} className="shifts-day-title">לילה</div>}
                                             </>)
                                             }
                                         
@@ -173,6 +212,8 @@ function View() {
                             </div>
                         ))}
                     </div>
+                    <button onClick={() => setIsModalVisible(true)} className="btn btn-danger mb-5">מחק את הסידור של {selectedEmployee.name}</button>
+                    </>
                     )}
                     {selectedEmployee && !selectedEmployee.shifts &&(
                         <h2>העובד לא הגיש סידור עדיין</h2>
@@ -181,6 +222,29 @@ function View() {
             </div>
         </div>
             )}
+
+            {isModalVisible && 
+                <>
+                    <div className="modal-overlay"></div>
+                    <div className={`modal fade show`} style={{ display: 'block' }} aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">לא ניתן לשחזר סידור שנמחק</h1>
+                        </div>
+                        <div className="modal-body">
+                            האם אתה בטוח שברצונך למחוק את הסידור ?
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-primary" onClick={() => setIsModalVisible(false)}>ביטול</button>
+                            <button type="button" className="btn btn-primary" onClick={deleteSched}>מחק</button>
+                            
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </>
+            }
 
         </>
     )

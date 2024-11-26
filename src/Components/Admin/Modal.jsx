@@ -17,6 +17,7 @@ function Modal(props) {
   const [comment, setComment] = useState(adminComment || "");
 
   function handelEmpClick(emp, time) {
+    console.log(backupSchedule)
     setBackupForSelectedTime(backupSchedule[day][time] || []);
     setShowAvailableEmps(true);
     setSelectedShift(time);

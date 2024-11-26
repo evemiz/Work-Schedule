@@ -160,8 +160,8 @@ function Generate({month, year, employeesList}) {
             year = firstDoc.year;
             modifyEmpsNum = firstDoc.modifyEmpsNum;
     
-            const startOfMonth = dayjs().startOf('month');
-            const endOfMonth = dayjs().endOf('month');
+            const startOfMonth = dayjs(`${year}-${String(month).padStart(2, '0')}-01`).startOf('month');
+            const endOfMonth = dayjs(`${year}-${String(month).padStart(2, '0')}-01`).endOf('month');
     
             // Loop to set special days
             for (let day = startOfMonth; day.isBefore(endOfMonth.add(1, 'day'), 'day'); day = day.add(1, 'day')) {
@@ -372,6 +372,7 @@ function Generate({month, year, employeesList}) {
             if (!querySnapshot.empty) {
               const savedData = querySnapshot.docs[0].data();
               const originalSchedule = reverseConvertObjectsToArrays(savedData.schedule);
+              const originalBackup = reverseConvertObjectsToArrays(savedData.backupSchedule);
               setAdminComments(savedData.adminComments);
               setEmployees(savedData.employees);
               setModifiedDays(savedData.modifiedDays);
@@ -382,6 +383,7 @@ function Generate({month, year, employeesList}) {
               setEveningCounter(savedData.eveningCounter);
               setNightCounter(savedData.nightCounter);
               setShiftsCounter(savedData.shiftsCounter);
+              setBackupSchedule(originalBackup);
             }
             else {
                 const toast = new bootstrap.Toast(toastRef.current);
@@ -496,6 +498,7 @@ function Generate({month, year, employeesList}) {
             eveningCounter={eveningCounter}
             nightCounter ={nightCounter}
             shiftsCounter={shiftsCounter}
+            backupSchedule={backupSchedule}
         />
       )}
             </>

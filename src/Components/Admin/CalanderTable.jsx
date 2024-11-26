@@ -18,6 +18,7 @@ const Calendar = ({
   eveningCounter,
   nightCounter,
   shiftsCounter,
+  backupSchedule,
 }) => {
   
   const toastRef = useRef(null);
@@ -82,6 +83,7 @@ const Calendar = ({
         eveningCounter,
         nightCounter,
         shiftsCounter,
+        backupSchedule: convertArraysToObjects(backupSchedule)
       };
       const querySnapshot = await getDocs(savedScheduleCollection);
 
@@ -100,6 +102,7 @@ const Calendar = ({
 
     } catch (error) {
       alert("שגיאה בשמירת הסידור");
+      console.log(error);
       setSaved(false);
     } finally {
       const toast = new bootstrap.Toast(toastRef.current);
